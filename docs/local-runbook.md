@@ -118,3 +118,50 @@ in invalid-token audit, read/write refusal when audit storage is unavailable, ac
 HTTP 200 tool errors versus HTTP 401 transport errors, and callback-listener cleanup.
 Timeout cleanup is exercised using a 300ms injected timeout; the normal callback
 default remains 120 seconds. No claim of an observed two-minute wait follows.
+
+## Full local evidence run
+
+After setup, start dependencies and wait for the issuer discovery URL to return 200.
+All commands below run from the product repository using PowerShell 7. Commit local
+source changes first: check/acceptance refuse a dirty or mismatched source tree.
+
+```powershell
+./scripts/setup.ps1
+./scripts/dependencies.ps1 up
+./scripts/check.ps1
+./scripts/acceptance.ps1
+```
+
+Checks perform locked restore, format verification, Release build and every focused
+test. Acceptance repeats twelve named groups, including browser-issued ten-second
+expiry and a fresh sign-in; raw expired-token probes bypass SDK refresh. Normal
+client tokens last 120 seconds. The same live ID token is rejected as an API token.
+Signed issuer/audience/expiry fixtures use the production validation parameters with
+a test-only key trusted only by an isolated validator. They are also sent to the live
+service, which rejects that untrusted key; that HTTP result alone does not isolate
+issuer/audience validation. No fixture signing key is added to the application.
+
+Each timestamped ignored result directory retains success/failure/not_run and private
+TRX/logs. Only allowlisted aggregate JSON/transcript/cleanup data is suitable for
+publication. Latest aggregate copies do not erase timestamped attempts. Database
+fixtures reset privately between cases. Normal application startup never resets them.
+The final acceptance script stops only this Compose project, checks demo listeners,
+and retains both named evidence volumes. Fixture disposal owns its exact child process
+handles and Playwright browser contexts. Run stop.ps1 if a session is interrupted.
+It deliberately does not terminate a manually launched foreground service: stop that
+terminal with Ctrl+C first.
+
+The frozen fixture manifest is checked against actual bytes. Source commit/tree and
+configuration hashes are recorded both before and after checks/acceptance. A later
+documentation commit can describe an earlier measured source; its SHA must not be
+presented as the measured commit. A failing prerequisite is a failed attempt, never a
+passing skip.
+
+On a fresh clone the current realm template imports automatically. Updating an
+existing synthetic realm requires an explicit offline import while only its Keycloak
+container is stopped, using the same private credential file and named volume. Do
+not delete evidence volumes to conceal earlier attempts. The dedicated test client
+uses the standard client Access Token Lifespan override of 10 seconds, as described in
+[Keycloak advanced OIDC settings](https://www.keycloak.org/docs/26.7.0/server_admin/index.html).
+The reviewed CI YAML shows native Docker on Ubuntu and no cloud credentials. It has
+not been run on hosted CI. Windows/WSL execution is the measured environment.

@@ -52,23 +52,28 @@ public sealed class DemoStack : IAsyncLifetime
             await database.MigrateAsync(CancellationToken.None);
             await database.SeedAsync(Path.Combine(Root, "fixtures"), CancellationToken.None);
         }
-        var start = new ProcessStartInfo(Path.Combine(Root, ".local", "dotnet", "dotnet.exe"))
+        var start = new ProcessStartInfo(OperatingSystem.IsWindows() ? Path.Combine(Root, ".local", "dotnet", "dotnet.exe") : Environment.GetEnvironmentVariable("DOTNET_HOST_PATH") ?? "dotnet")
         {
-            WorkingDirectory = Root, UseShellExecute = false, CreateNoWindow = true,
-            RedirectStandardOutput = true, RedirectStandardError = true
+            WorkingDirectory = Root,
+            UseShellExecute = false,
+            CreateNoWindow = true,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true
         };
         var configuration = new DirectoryInfo(AppContext.BaseDirectory).Parent!.Name;
         start.ArgumentList.Add(Path.Combine(Root, "src", "DeliveryExceptions.Service", "bin", configuration, "net10.0", "DeliveryExceptions.Service.dll"));
         start.Environment["ASPNETCORE_URLS"] = "http://127.0.0.1:5180";
         start.Environment["DELIVERY_DB_CONNECTION"] = DemoDatabase.ConnectionString;
+        var ready = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         service = Process.Start(start) ?? throw new InvalidOperationException("Service did not start");
-        service.OutputDataReceived += (_, line) => { if (line.Data is not null) lock (serviceOutput) serviceOutput.AppendLine(line.Data); };
+        service.OutputDataReceived += (_, line) => { if (line.Data == "delivery-demo-ready") ready.TrySetResult(); if (line.Data is not null) lock (serviceOutput) serviceOutput.AppendLine(line.Data); };
         service.ErrorDataReceived += (_, line) => { if (line.Data is not null) lock (serviceOutput) serviceOutput.AppendLine(line.Data); };
         service.BeginOutputReadLine();
         service.BeginErrorReadLine();
         for (var attempt = 0; attempt < 100; attempt++)
         {
             if (service.HasExited) throw new InvalidOperationException("Owned service exited during startup");
+            if (!ready.Task.IsCompleted) { await Task.Delay(100); continue; }
             try { using var response = await Http.GetAsync("http://127.0.0.1:5180/mcp", HttpCompletionOption.ResponseHeadersRead); return; }
             catch (HttpRequestException) { await Task.Delay(100); }
         }

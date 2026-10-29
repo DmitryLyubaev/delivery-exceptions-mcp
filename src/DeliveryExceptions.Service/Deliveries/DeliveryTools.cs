@@ -39,9 +39,18 @@ public sealed class DeliveryTools(DeliveryService service, IHttpContextAccessor 
     private static CallToolResult Error(string code) => Result(new ToolOutcome<object>(null, code, Guid.NewGuid().ToString("N")));
     private static CallToolResult Result<T>(ToolOutcome<T> outcome)
     {
-        var payload = JsonSerializer.SerializeToElement(new { data = outcome.Value, error = outcome.ErrorCode,
-            correlationId = outcome.CorrelationId, untrustedFields = new[] { "carrierNote" } }, JsonSerializerOptions.Web);
-        return new() { IsError = outcome.ErrorCode is not null, StructuredContent = payload,
-            Content = [new TextContentBlock { Text = payload.GetRawText() }] };
+        var payload = JsonSerializer.SerializeToElement(new
+        {
+            data = outcome.Value,
+            error = outcome.ErrorCode,
+            correlationId = outcome.CorrelationId,
+            untrustedFields = new[] { "carrierNote" }
+        }, JsonSerializerOptions.Web);
+        return new()
+        {
+            IsError = outcome.ErrorCode is not null,
+            StructuredContent = payload,
+            Content = [new TextContentBlock { Text = payload.GetRawText() }]
+        };
     }
 }

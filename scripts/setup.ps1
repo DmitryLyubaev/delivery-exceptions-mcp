@@ -26,6 +26,13 @@ try {
     $realm | ConvertTo-Json -Depth 30 | Set-Content '.local/realm.json'
     $privateConfig | ConvertTo-Json -Depth 10 | Set-Content '.local/credentials.json'
   }
+  # Re-render the private import from the current reviewed template, preserving credentials.
+  $privateConfig = Get-Content '.local/credentials.json' -Raw | ConvertFrom-Json
+  $realm = Get-Content 'infra/keycloak/realm-template.json' -Raw | ConvertFrom-Json
+  foreach ($user in $realm.users) {
+    $user | Add-Member -NotePropertyName credentials -NotePropertyValue @(@{type='password';value=$privateConfig.users.($user.username);temporary=$false})
+  }
+  $realm | ConvertTo-Json -Depth 30 | Set-Content '.local/realm.json'
   $versions = Get-Content 'infra/versions.json' -Raw | ConvertFrom-Json
   $privateConfig = Get-Content '.local/credentials.json' -Raw | ConvertFrom-Json
   @("KEYCLOAK_IMAGE=$($versions.keycloak)","POSTGRES_IMAGE=$($versions.postgres)","KEYCLOAK_ADMIN_PASSWORD=$($privateConfig.adminPassword)","POSTGRES_PASSWORD=$($privateConfig.postgresPassword)") | Set-Content '.local/docker.env'

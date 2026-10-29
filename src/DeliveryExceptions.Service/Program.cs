@@ -26,14 +26,7 @@ builder.Services.AddAuthentication(options =>
     options.Authority = issuer;
     options.RequireHttpsMetadata = false; // Loopback development realm only.
     options.MapInboundClaims = false;
-    options.TokenValidationParameters = new()
-    {
-        ValidateIssuer = true, ValidIssuer = issuer,
-        ValidateAudience = true, ValidAudience = resource,
-        ValidateLifetime = true, RequireExpirationTime = true,
-        ValidateIssuerSigningKey = true, RequireSignedTokens = true,
-        ClockSkew = TimeSpan.FromSeconds(2), ValidAlgorithms = [SecurityAlgorithms.RsaSha256]
-    };
+    options.TokenValidationParameters = AccessTokenValidation.Create();
     options.Events = new JwtBearerEvents
     {
         OnTokenValidated = context =>
@@ -126,4 +119,5 @@ app.Use(async (context, next) =>
 });
 app.UseAuthorization();
 app.MapMcp("/mcp").RequireAuthorization();
+app.Lifetime.ApplicationStarted.Register(() => Console.WriteLine("delivery-demo-ready"));
 app.Run();

@@ -6,6 +6,8 @@ namespace DeliveryExceptions.Tests.Support;
 
 public sealed class OAuthProbe(string mode = "normal") : DelegatingHandler(new SocketsHttpHandler())
 {
+    public string? AccessToken { get; private set; }
+    public string? IdToken { get; private set; }
     public int TokenRequests { get; private set; }
     public List<string> Resources { get; } = [];
     public List<string> SentResources { get; } = [];
@@ -21,6 +23,7 @@ public sealed class OAuthProbe(string mode = "normal") : DelegatingHandler(new S
             TokenRequests++;
             var body = await request.Content!.ReadAsStringAsync(ct);
             var fields = QueryHelpers.ParseQuery(body).ToDictionary(entry => entry.Key, entry => entry.Value.ToString());
+            if (mode == "short-lived") fields["client_id"] = "delivery-demo-short";
             Resources.Add(fields.GetValueOrDefault("resource", "missing"));
             if (mode is "changed-resource" or "unknown-resource") fields["resource"] = "http://127.0.0.1:5180/unknown";
             if (mode == "wrong-verifier") fields["code_verifier"] = new string('x', 50);
@@ -37,6 +40,8 @@ public sealed class OAuthProbe(string mode = "normal") : DelegatingHandler(new S
             if (response.IsSuccessStatusCode)
             {
                 SuccessfulTokens++;
+                AccessToken = body.RootElement.GetProperty("access_token").GetString();
+                IdToken = body.RootElement.TryGetProperty("id_token", out var idToken) ? idToken.GetString() : null;
                 var token = new JwtSecurityTokenHandler().ReadJwtToken(body.RootElement.GetProperty("access_token").GetString());
                 SafeResponses.Add(new { status = (int)response.StatusCode, audience = token.Audiences.ToArray(), issuer = token.Issuer, type = token.Claims.FirstOrDefault(claim => claim.Type == "typ")?.Value, algorithm = token.Header.Alg });
             }

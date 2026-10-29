@@ -1,0 +1,48 @@
+name: Local synthetic demo checks
+on:
+  workflow_dispatch:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  local-demo:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.403
+      - name: Generate private synthetic configuration
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory .local/results -Force | Out-Null
+          $realm=Get-Content infra/keycloak/realm-template.json -Raw|ConvertFrom-Json
+          $private=@{users=@{};adminPassword=[Convert]::ToHexString([Security.Cryptography.RandomNumberGenerator]::GetBytes(24));postgresPassword=[Convert]::ToHexString([Security.Cryptography.RandomNumberGenerator]::GetBytes(24))}
+          foreach($user in $realm.users){$value=[Convert]::ToHexString([Security.Cryptography.RandomNumberGenerator]::GetBytes(20));$private.users[$user.username]=$value;$user|Add-Member -NotePropertyName credentials -NotePropertyValue @(@{type='password';value=$value;temporary=$false})}
+          $realm|ConvertTo-Json -Depth 30|Set-Content .local/realm.json
+          $private|ConvertTo-Json -Depth 10|Set-Content .local/credentials.json
+          $versions=Get-Content infra/versions.json -Raw|ConvertFrom-Json
+          @("KEYCLOAK_IMAGE=$($versions.keycloak)","POSTGRES_IMAGE=$($versions.postgres)","KEYCLOAK_ADMIN_PASSWORD=$($private.adminPassword)","POSTGRES_PASSWORD=$($private.postgresPassword)")|Set-Content .local/docker.env
+      - run: dotnet restore --locked-mode && dotnet build -c Release --no-restore
+      - name: Install matching browser and start dependencies
+        shell: pwsh
+        run: |
+          $env:PLAYWRIGHT_BROWSERS_PATH="$pwd/.local/browsers"
+          ./tests/DeliveryExceptions.Tests/bin/Release/net10.0/playwright.ps1 install --with-deps chromium
+          if($LASTEXITCODE -ne 0){throw 'Browser install failed'}
+          ./scripts/dependencies.ps1 up
+          $ready=$false
+          for($i=0;$i -lt 120;$i++){try{$r=Invoke-WebRequest 'http://127.0.0.1:5182/realms/delivery-demo/.well-known/openid-configuration';if($r.StatusCode -eq 200){$ready=$true;break}}catch{};Start-Sleep -Seconds 1}
+          if(!$ready){throw 'Provider readiness failed'}
+      - name: Check and accept same committed source
+        shell: pwsh
+        run: |
+          ./scripts/check.ps1
+          ./scripts/acceptance.ps1
+      - name: Stop only this demo project
+        if: always()
+        shell: pwsh
+        run: ./scripts/stop.ps1
+# This definition is unpublished and has not been executed on hosted CI.
+# Private credentials, TRX, raw browser/provider logs and tokens are never uploaded.
