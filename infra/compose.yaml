@@ -1,0 +1,23 @@
+name: p18-delivery-exceptions
+services:
+  keycloak:
+    image: ${KEYCLOAK_IMAGE:?Pinned Keycloak image required}
+    command: ["start-dev", "--http-port=8080", "--hostname=http://127.0.0.1:5182", "--features=resource-indicators", "--import-realm"]
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: demo-admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:?Private password required}
+    ports: ["127.0.0.1:5182:8080"]
+    volumes:
+      - ../.local/realm.json:/opt/keycloak/data/import/realm.json:ro
+      - keycloak-data:/opt/keycloak/data
+  postgres:
+    image: ${POSTGRES_IMAGE:?Pinned PostgreSQL image required}
+    environment:
+      POSTGRES_USER: delivery_demo
+      POSTGRES_DB: delivery_demo
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Private password required}
+    ports: ["127.0.0.1:5183:5432"]
+    volumes: ["postgres-data:/var/lib/postgresql/data"]
+volumes:
+  keycloak-data:
+  postgres-data:

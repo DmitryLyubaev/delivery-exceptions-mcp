@@ -1,0 +1,31 @@
+{
+  "realm": "delivery-demo",
+  "enabled": true,
+  "registrationAllowed": false,
+  "resetPasswordAllowed": false,
+  "sslRequired": "none",
+  "accessTokenLifespan": 120,
+  "clients": [
+    {"clientId":"delivery-mcp","enabled":true,"bearerOnly":true,"protocol":"openid-connect","attributes":{"resource_url":"http://127.0.0.1:5180/mcp"}},
+    {
+      "clientId":"delivery-demo-cli", "enabled":true, "publicClient":true,
+      "protocol":"openid-connect", "standardFlowEnabled":true,
+      "directAccessGrantsEnabled":false, "serviceAccountsEnabled":false, "fullScopeAllowed":false,
+      "redirectUris":["http://127.0.0.1:5181/callback"], "webOrigins":[],
+      "attributes":{"pkce.code.challenge.method":"S256"},
+      "defaultClientScopes":["basic"],
+      "optionalClientScopes":["deliveries.read","exceptions.review"],
+      "protocolMappers":[{"name":"mcp-audience","protocol":"openid-connect","protocolMapper":"oidc-audience-mapper","config":{"included.client.audience":"delivery-mcp","access.token.claim":"true","id.token.claim":"false"}}]
+    }
+  ],
+  "clientScopes":[
+    {"name":"basic","protocol":"openid-connect","attributes":{"include.in.token.scope":"false"},"protocolMappers":[{"name":"subject","protocol":"openid-connect","protocolMapper":"oidc-sub-mapper","config":{"access.token.claim":"true","id.token.claim":"true","introspection.token.claim":"true"}}]},
+    {"name":"deliveries.read","protocol":"openid-connect","attributes":{"include.in.token.scope":"true","display.on.consent.screen":"true"}},
+    {"name":"exceptions.review","protocol":"openid-connect","attributes":{"include.in.token.scope":"true","display.on.consent.screen":"true"}}
+  ],
+  "users":[
+    {"id":"10000000-0000-0000-0000-000000000001","username":"a-operator","enabled":true,"firstName":"A","lastName":"Operator","email":"a-operator@example.invalid","emailVerified":true,"requiredActions":[]},
+    {"id":"10000000-0000-0000-0000-000000000002","username":"a-reader","enabled":true,"firstName":"A","lastName":"Reader","email":"a-reader@example.invalid","emailVerified":true,"requiredActions":[]},
+    {"id":"20000000-0000-0000-0000-000000000001","username":"b-operator","enabled":true,"firstName":"B","lastName":"Operator","email":"b-operator@example.invalid","emailVerified":true,"requiredActions":[]}
+  ]
+}
