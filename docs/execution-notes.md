@@ -31,3 +31,5 @@ local codex/local-demo branch is retained. Public product creation/push needs Dm
 explicit approval under portfolio-plan/RULES.md. No public push is inferred from
 implementation approval. Demo containers/listeners are stopped, named evidence volumes
 and ignored local runtime/private results are retained.
+
+Automatic approval review rejected deletion of the verified ignored plan scratch directory as 'blocked by policy', without a more detailed reason. It was not retried and remains ignored. Committed source/evidence and the tracked tree are unaffected.
