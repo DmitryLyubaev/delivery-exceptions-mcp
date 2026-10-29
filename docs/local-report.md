@@ -53,11 +53,11 @@ created and no repository was published.
 ## Measured outcome
 
 Measured at 10/29/2026 20:37:49. Locked restore and formatting passed; Release build
-had zero warnings/errors. Focused tests: **51/51**, zero skips (2 minutes 5 seconds).
-Acceptance: **12/12**, zero skips (1 minute 13 seconds), one final local run.
+had zero warnings/errors. Focused tests: **54/54**, zero skips (1 minute 58 seconds).
+Acceptance: **12/12**, zero skips (1 minute 5 seconds), one final local run.
 
-- Source: `9bb1a4c8052591e430eae7d8f10cba1defcd8a20`
-- Git tree: `8bcbbf7131a3e1353f3a3590f79305acd6a0244f`
+- Source: `5c4b5be555a4aee72965605c9ffecc12688bf37d`
+- Git tree: `9d111a540a1ffb6496174066ebc9e9b801336266`
 - Fixture manifest SHA-256: `ba441258628949d2e13bab1deaeb09b01cf95316a0465f96fe18818d63ec5c26`
 - Configuration-set SHA-256: `53ac38f1c4b1b599f5e054fafe4b9648cabca5d58e2a2951f2a33810e9211605`
 
@@ -85,3 +85,26 @@ through awaited Playwright fixtures; the manual browser tabs were closed separat
 [cleanup observation](evidence/2026-10-29-cleanup.json),
 [actual allowlisted review audit sample](evidence/2026-10-29-audit-example.json).
 The audit sample was selected read-only during this acceptance run.
+
+## Independent review closeout
+
+The single fresh-context review of 063e2d5 found two authentication defects and one
+result-preservation defect. The latter was regraded from Minor to Important because
+known failed cases must survive result validation failure. All three regressions were
+observed RED, fixed in one pass, then GREEN on 5c4b5be. The full focused suite and all
+acceptance groups passed again on that clean commit. No second review was dispatched.
+There are no deferred minor findings.
+
+- Routing aliases `/mcp/` and `/MCP/` now receive the same baseline scope check and
+  durable unauthenticated/invalid-token audit as the canonical route. Valid canonical
+  audience tokens still work; missing-read tokens return 403.
+- Audience comparison explicitly rejects trailing-slash differences. The isolated
+  signed control accepts the canonical audience and rejects the slash variant; the
+  production service never trusts the fixture key.
+- Duplicate/unrecognized TRX entries preserve safely observed fail/pass/not_run cases
+  and separately fail result validation and overall acceptance.
+
+The [initial measured report](local-report-initial-2026-10-29.md) and its original
+allowlisted artifacts remain available as historical evidence. Private failed RED runs
+and both timestamped acceptance attempts remain ignored. [Execution rulings and review
+limits](execution-notes.md) record what was deliberately left outside this milestone.

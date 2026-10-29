@@ -1,8 +1,8 @@
 {
-  "ownedContainersRunning": 0,
-  "unownedResources": "separately tested by ReportLifecycleTests",
-  "demoListeners": 0,
-  "browserOwnership": "Playwright contexts disposed by awaited fixture",
+  "retainedVolumes": 2,
   "passed": true,
-  "retainedVolumes": 2
+  "browserOwnership": "Playwright contexts disposed by awaited fixture",
+  "demoListeners": 0,
+  "ownedContainersRunning": 0,
+  "unownedResources": "separately tested by ReportLifecycleTests"
 }

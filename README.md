@@ -5,7 +5,7 @@ six fictional deliveries, two business tenants and three synthetic users. Real b
 PKCE sign-in issues resource-targeted tokens; scopes intersect fixed database membership.
 A review checks the caller's expected version and commits its update and audit together.
 
-29 October 2026: **51 focused tests and all 12 acceptance groups passed**, zero skips,
+29 October 2026: **54 focused tests and all 12 acceptance groups passed**, zero skips,
 on one clean source/configuration set. See the [dated results and limits](docs/local-report.md).
 This is local loopback evidence. Keycloak's pinned resource-indicators feature is
 experimental. Remote HTTPS hosting, hosted CI and language-model behavior are unproven.
