@@ -69,8 +69,7 @@ The client now allows 150 seconds for initialization, with the unchanged 120-sec
 callback timeout and a 180-second test budget. A fresh native repeat passed all ten
 tests in 40 seconds. Token lifetime, issuer/audience checks and PKCE remain unchanged.
 
-Only the compatibility gate is accepted at this point. Tenant reads/writes, durable
-audit, full token-negative acceptance, restart evidence and the final report remain.
+This is the historical compatibility checkpoint. The completed local milestone, including tenant tools, audit, token negatives and restart, is in [the final report](local-report.md).
 
 ## Standalone CLI demonstration
 
