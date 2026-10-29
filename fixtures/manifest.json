@@ -1,0 +1,14 @@
+{
+  "files": [
+    {
+      "sha256": "838e3b5ff0f40f6153d1c07b848eb9ca5f4029a98ddda930e9c4bb2a74f78cb6",
+      "path": "deliveries.json"
+    },
+    {
+      "sha256": "dcfa1230f3d4e1c162588b54f0d201be824ac24470adc944be24ce98f83b5c1a",
+      "path": "memberships.json"
+    }
+  ],
+  "schemaVersion": 1,
+  "date": "2026-10-29"
+}

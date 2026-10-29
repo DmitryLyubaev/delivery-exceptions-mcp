@@ -4,4 +4,5 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
     <PackageReference Include="Npgsql" />
   </ItemGroup>
+  <ItemGroup><EmbeddedResource Include="Storage/Migrations/*.sql" /></ItemGroup>
 </Project>

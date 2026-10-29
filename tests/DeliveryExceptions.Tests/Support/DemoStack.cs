@@ -7,6 +7,12 @@ public sealed class DemoStack : IAsyncLifetime
 {
     public HttpClient Http { get; } = new() { Timeout = TimeSpan.FromSeconds(5) };
     private Process? service;
+    public int ServiceProcessId => service?.Id ?? throw new InvalidOperationException("No owned service");
+    public async Task RestartAsync()
+    {
+        await StopServiceAsync();
+        await InitializeAsync();
+    }
     public static string Root { get; } = FindRoot();
 
     private static string FindRoot()
@@ -38,10 +44,16 @@ public sealed class DemoStack : IAsyncLifetime
         throw new TimeoutException("Owned service readiness timed out");
     }
 
-    public async Task DisposeAsync()
+    private async Task StopServiceAsync()
     {
         if (service is { HasExited: false }) { service.Kill(entireProcessTree: true); await service.WaitForExitAsync(); }
         service?.Dispose();
+        service = null;
+    }
+
+    public async Task DisposeAsync()
+    {
+        await StopServiceAsync();
         Http.Dispose();
     }
 }
