@@ -30,7 +30,7 @@ public sealed class OAuthLogin(Func<Uri, CancellationToken, Task>? openBrowser =
         var transport = http is null ? new HttpClientTransport(options) : new HttpClientTransport(options, http);
         try
         {
-            return await McpClient.CreateAsync(transport, new() { ProtocolVersion = "2026-07-28" }, cancellationToken: ct);
+            return await McpClient.CreateAsync(transport, new() { ProtocolVersion = "2026-07-28", InitializationTimeout = TimeSpan.FromSeconds(150) }, cancellationToken: ct);
         }
         catch { await transport.DisposeAsync(); throw; }
     }

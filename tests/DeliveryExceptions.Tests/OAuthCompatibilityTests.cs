@@ -43,7 +43,7 @@ public sealed class OAuthCompatibilityTests(Support.DemoStack stack, Xunit.Abstr
             sawAuthorization = true;
             await browser.OpenAsync(uri, ct);
         }, http);
-        using var deadline = new CancellationTokenSource(TimeSpan.FromSeconds(60));
+        using var deadline = new CancellationTokenSource(TimeSpan.FromSeconds(180));
         ModelContextProtocol.Client.McpClient client;
         try { client = await login.ConnectAsync(new("http://127.0.0.1:5180/mcp"), false, deadline.Token); }
         catch { output.WriteLine(System.Text.Json.JsonSerializer.Serialize(probe.SafeResponses)); throw; }
@@ -85,7 +85,7 @@ public sealed class OAuthCompatibilityTests(Support.DemoStack stack, Xunit.Abstr
     [Fact]
     public async Task UnknownResourceFails()
     {
-        using var deadline = new CancellationTokenSource(TimeSpan.FromSeconds(60));
+        using var deadline = new CancellationTokenSource(TimeSpan.FromSeconds(180));
         var browser = new Support.BrowserLogin();
         using var probe = new Support.OAuthProbe();
         using var http = new HttpClient(probe);
@@ -110,7 +110,7 @@ public sealed class OAuthCompatibilityTests(Support.DemoStack stack, Xunit.Abstr
     [InlineData("wrong-verifier")]
     public async Task ChangedResourceAtExchangeOrWrongVerifierFails(string mode)
     {
-        using var deadline = new CancellationTokenSource(TimeSpan.FromSeconds(60));
+        using var deadline = new CancellationTokenSource(TimeSpan.FromSeconds(180));
         var browser = new Support.BrowserLogin();
         using var probe = new Support.OAuthProbe(mode);
         using var http = new HttpClient(probe);

@@ -63,5 +63,11 @@ The first buffered-body readiness probe timed out locally; probes now inspect re
 headers immediately. Builds use one worker and disabled build servers after an initial
 multi-process stall. Those setup findings are not counted as successful security tests.
 
+A subsequent repeat hit the original 60-second test budget before credentials were
+read, after slow browser startup/navigation. That failed repeat remains retained.
+The client now allows 150 seconds for initialization, with the unchanged 120-second
+callback timeout and a 180-second test budget. A fresh native repeat passed all ten
+tests in 40 seconds. Token lifetime, issuer/audience checks and PKCE remain unchanged.
+
 Only the compatibility gate is accepted at this point. Tenant reads/writes, durable
 audit, full token-negative acceptance, restart evidence and the final report remain.
