@@ -1,0 +1,154 @@
+{
+  "schemaVersion": 1,
+  "measuredAt": "2026-10-29T19:16:01.9238218+00:00",
+  "identity": {
+    "source": "c765658f4d7c3f6cca1a827e25c6e153728b374b",
+    "tree": "873b98f9e54bf490f9f0c6eaee44001a21a0d926",
+    "fixture": "56d67658ac2522a551a5f2b2386bf78ab2404d0d61850bea3c6e63424b1e5dc2",
+    "config": "47c72b0f1d4b60e0870e73f9d56a4f6154053b61547088e4b91d4c3e439b48dd"
+  },
+  "cases": [
+    {
+      "id": "A1",
+      "provenance": "live-local",
+      "status": "pass",
+      "identity": {
+        "source": "c765658f4d7c3f6cca1a827e25c6e153728b374b",
+        "tree": "873b98f9e54bf490f9f0c6eaee44001a21a0d926",
+        "fixture": "56d67658ac2522a551a5f2b2386bf78ab2404d0d61850bea3c6e63424b1e5dc2",
+        "config": "47c72b0f1d4b60e0870e73f9d56a4f6154053b61547088e4b91d4c3e439b48dd"
+      }
+    },
+    {
+      "id": "A2",
+      "provenance": "live-local",
+      "status": "pass",
+      "identity": {
+        "source": "c765658f4d7c3f6cca1a827e25c6e153728b374b",
+        "tree": "873b98f9e54bf490f9f0c6eaee44001a21a0d926",
+        "fixture": "56d67658ac2522a551a5f2b2386bf78ab2404d0d61850bea3c6e63424b1e5dc2",
+        "config": "47c72b0f1d4b60e0870e73f9d56a4f6154053b61547088e4b91d4c3e439b48dd"
+      }
+    },
+    {
+      "id": "A3",
+      "provenance": "live-local",
+      "status": "pass",
+      "identity": {
+        "source": "c765658f4d7c3f6cca1a827e25c6e153728b374b",
+        "tree": "873b98f9e54bf490f9f0c6eaee44001a21a0d926",
+        "fixture": "56d67658ac2522a551a5f2b2386bf78ab2404d0d61850bea3c6e63424b1e5dc2",
+        "config": "47c72b0f1d4b60e0870e73f9d56a4f6154053b61547088e4b91d4c3e439b48dd"
+      }
+    },
+    {
+      "id": "A4",
+      "provenance": "live-local",
+      "status": "pass",
+      "identity": {
+        "source": "c765658f4d7c3f6cca1a827e25c6e153728b374b",
+        "tree": "873b98f9e54bf490f9f0c6eaee44001a21a0d926",
+        "fixture": "56d67658ac2522a551a5f2b2386bf78ab2404d0d61850bea3c6e63424b1e5dc2",
+        "config": "47c72b0f1d4b60e0870e73f9d56a4f6154053b61547088e4b91d4c3e439b48dd"
+      }
+    },
+    {
+      "id": "A5",
+      "provenance": "live-local",
+      "status": "pass",
+      "identity": {
+        "source": "c765658f4d7c3f6cca1a827e25c6e153728b374b",
+        "tree": "873b98f9e54bf490f9f0c6eaee44001a21a0d926",
+        "fixture": "56d67658ac2522a551a5f2b2386bf78ab2404d0d61850bea3c6e63424b1e5dc2",
+        "config": "47c72b0f1d4b60e0870e73f9d56a4f6154053b61547088e4b91d4c3e439b48dd"
+      }
+    },
+    {
+      "id": "A6",
+      "provenance": "live-local",
+      "status": "pass",
+      "identity": {
+        "source": "c765658f4d7c3f6cca1a827e25c6e153728b374b",
+        "tree": "873b98f9e54bf490f9f0c6eaee44001a21a0d926",
+        "fixture": "56d67658ac2522a551a5f2b2386bf78ab2404d0d61850bea3c6e63424b1e5dc2",
+        "config": "47c72b0f1d4b60e0870e73f9d56a4f6154053b61547088e4b91d4c3e439b48dd"
+      }
+    },
+    {
+      "id": "A7",
+      "provenance": "live-local-and-labelled-fixtures",
+      "status": "pass",
+      "identity": {
+        "source": "c765658f4d7c3f6cca1a827e25c6e153728b374b",
+        "tree": "873b98f9e54bf490f9f0c6eaee44001a21a0d926",
+        "fixture": "56d67658ac2522a551a5f2b2386bf78ab2404d0d61850bea3c6e63424b1e5dc2",
+        "config": "47c72b0f1d4b60e0870e73f9d56a4f6154053b61547088e4b91d4c3e439b48dd"
+      }
+    },
+    {
+      "id": "A8",
+      "provenance": "live-local",
+      "status": "pass",
+      "identity": {
+        "source": "c765658f4d7c3f6cca1a827e25c6e153728b374b",
+        "tree": "873b98f9e54bf490f9f0c6eaee44001a21a0d926",
+        "fixture": "56d67658ac2522a551a5f2b2386bf78ab2404d0d61850bea3c6e63424b1e5dc2",
+        "config": "47c72b0f1d4b60e0870e73f9d56a4f6154053b61547088e4b91d4c3e439b48dd"
+      }
+    },
+    {
+      "id": "A9",
+      "provenance": "live-local",
+      "status": "pass",
+      "identity": {
+        "source": "c765658f4d7c3f6cca1a827e25c6e153728b374b",
+        "tree": "873b98f9e54bf490f9f0c6eaee44001a21a0d926",
+        "fixture": "56d67658ac2522a551a5f2b2386bf78ab2404d0d61850bea3c6e63424b1e5dc2",
+        "config": "47c72b0f1d4b60e0870e73f9d56a4f6154053b61547088e4b91d4c3e439b48dd"
+      }
+    },
+    {
+      "id": "A10",
+      "provenance": "live-local",
+      "status": "pass",
+      "identity": {
+        "source": "c765658f4d7c3f6cca1a827e25c6e153728b374b",
+        "tree": "873b98f9e54bf490f9f0c6eaee44001a21a0d926",
+        "fixture": "56d67658ac2522a551a5f2b2386bf78ab2404d0d61850bea3c6e63424b1e5dc2",
+        "config": "47c72b0f1d4b60e0870e73f9d56a4f6154053b61547088e4b91d4c3e439b48dd"
+      }
+    },
+    {
+      "id": "A11",
+      "provenance": "live-local",
+      "status": "pass",
+      "identity": {
+        "source": "c765658f4d7c3f6cca1a827e25c6e153728b374b",
+        "tree": "873b98f9e54bf490f9f0c6eaee44001a21a0d926",
+        "fixture": "56d67658ac2522a551a5f2b2386bf78ab2404d0d61850bea3c6e63424b1e5dc2",
+        "config": "47c72b0f1d4b60e0870e73f9d56a4f6154053b61547088e4b91d4c3e439b48dd"
+      }
+    },
+    {
+      "id": "A12",
+      "provenance": "live-local",
+      "status": "pass",
+      "identity": {
+        "source": "c765658f4d7c3f6cca1a827e25c6e153728b374b",
+        "tree": "873b98f9e54bf490f9f0c6eaee44001a21a0d926",
+        "fixture": "56d67658ac2522a551a5f2b2386bf78ab2404d0d61850bea3c6e63424b1e5dc2",
+        "config": "47c72b0f1d4b60e0870e73f9d56a4f6154053b61547088e4b91d4c3e439b48dd"
+      }
+    }
+  ],
+  "cleanup": {
+    "passed": true
+  },
+  "testExitCode": 0,
+  "resultValidationPassed": true,
+  "accepted": true,
+  "environment": "local-loopback",
+  "modelCalls": 0,
+  "hostedCiProven": false,
+  "remoteHttpsProven": false
+}

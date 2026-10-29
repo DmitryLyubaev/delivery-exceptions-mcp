@@ -5,10 +5,12 @@ six fictional deliveries, two business tenants and three synthetic users. Real b
 PKCE sign-in issues resource-targeted tokens; scopes intersect fixed database membership.
 A review checks the caller's expected version and commits its update and audit together.
 
-29 October 2026: **54 focused tests and all 12 acceptance groups passed**, zero skips,
-on one clean source/configuration set. See the [dated results and limits](docs/local-report.md).
-This is local loopback evidence. Keycloak's pinned resource-indicators feature is
-experimental. Remote HTTPS hosting, hosted CI and language-model behavior are unproven.
+30 October 2026: **54 focused tests and all 12 acceptance groups passed** in
+[hosted Ubuntu CI](https://github.com/DmitryLyubaev/delivery-exceptions-mcp/actions/runs/40937981554),
+zero skips. See the [publication report and source-bound evidence](docs/publication-report-2026-10-30.md).
+The separate [29 October Windows result](docs/local-report.md) records the same test counts.
+Both measurements run the service on loopback. Keycloak's pinned resource-indicators
+feature is experimental. Remote HTTPS hosting and language-model behavior are unproven.
 
 | Tool | Permission |
 |---|---|

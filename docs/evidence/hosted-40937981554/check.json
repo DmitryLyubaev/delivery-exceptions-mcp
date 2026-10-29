@@ -1,0 +1,12 @@
+{
+  "measuredAt": "2026-10-29T19:15:26.0388400+00:00",
+  "identity": {
+    "source": "c765658f4d7c3f6cca1a827e25c6e153728b374b",
+    "config": "47c72b0f1d4b60e0870e73f9d56a4f6154053b61547088e4b91d4c3e439b48dd",
+    "fixture": "56d67658ac2522a551a5f2b2386bf78ab2404d0d61850bea3c6e63424b1e5dc2",
+    "tree": "873b98f9e54bf490f9f0c6eaee44001a21a0d926"
+  },
+  "passedTests": 54,
+  "total": 54,
+  "passed": true
+}

@@ -1,5 +1,7 @@
 # Local acceptance report - 29 October 2026
 
+> Subsequent publication and hosted Ubuntu verification on 30 October are recorded in the [publication report](publication-report-2026-10-30.md). This document retains the dated Windows measurement.
+
 This is a bounded synthetic CV demonstration on Windows with Ubuntu WSL Docker.
 One final acceptance run covers twelve deterministic groups over six records, two
 business tenants and three users. These are functional checks, not statistical trials

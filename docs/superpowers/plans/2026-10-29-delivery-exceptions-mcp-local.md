@@ -10,7 +10,7 @@
 
 **Spec:** [Approved Project 18 design](../specs/2026-10-29-delivery-exceptions-mcp-design.md), approved by Dmitry on 29 October 2026. Read the design and `RULES.md` before execution.
 
-**Status:** Approved by Dmitry on 29 October 2026 for Native execution. Complete locally: one independent review and its three verified fixes; 54 focused tests and all 12 acceptance groups passed. Product publication remains unapproved.
+**Status:** Approved by Dmitry on 29 October 2026 for Native execution. Complete locally: one independent review and its three verified fixes; 54 focused tests and all 12 acceptance groups passed. Dmitry approved public publication and hosted CI on 30 October 2026; see the [publication report](../../publication-report-2026-10-30.md).
 
 ## Global Constraints
 

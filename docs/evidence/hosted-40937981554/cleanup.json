@@ -1,0 +1,8 @@
+{
+  "unownedResources": "separately tested by ReportLifecycleTests",
+  "demoListeners": 0,
+  "retainedVolumes": 2,
+  "ownedContainersRunning": 0,
+  "browserOwnership": "Playwright contexts disposed by awaited fixture",
+  "passed": true
+}

@@ -1,0 +1,17 @@
+Local deterministic MCP acceptance. Zero model calls. No remote HTTPS or hosted CI claim.
+source=c765658f4d7c3f6cca1a827e25c6e153728b374b
+tree=873b98f9e54bf490f9f0c6eaee44001a21a0d926
+fixture=56d67658ac2522a551a5f2b2386bf78ab2404d0d61850bea3c6e63424b1e5dc2
+config=47c72b0f1d4b60e0870e73f9d56a4f6154053b61547088e4b91d4c3e439b48dd
+A1 pass live-local
+A2 pass live-local
+A3 pass live-local
+A4 pass live-local
+A5 pass live-local
+A6 pass live-local
+A7 pass live-local-and-labelled-fixtures
+A8 pass live-local
+A9 pass live-local
+A10 pass live-local
+A11 pass live-local
+A12 pass live-local

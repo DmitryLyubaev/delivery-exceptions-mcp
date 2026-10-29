@@ -162,5 +162,4 @@ container is stopped, using the same private credential file and named volume. D
 not delete evidence volumes to conceal earlier attempts. The dedicated test client
 uses the standard client Access Token Lifespan override of 10 seconds, as described in
 [Keycloak advanced OIDC settings](https://www.keycloak.org/docs/26.7.0/server_admin/index.html).
-The reviewed CI YAML shows native Docker on Ubuntu and no cloud credentials. It has
-not been run on hosted CI. Windows/WSL execution is the measured environment.
+The native-Docker workflow passed on hosted Ubuntu 24.04 on 30 October 2026, with no application cloud credentials. See the [source-bound publication report](publication-report-2026-10-30.md). Windows/WSL and hosted Ubuntu results are recorded separately. Trigger a new run with `gh workflow run ci.yml --ref main` or the Actions page.

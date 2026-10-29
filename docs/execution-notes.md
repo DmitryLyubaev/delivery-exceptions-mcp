@@ -33,3 +33,12 @@ implementation approval. Demo containers/listeners are stopped, named evidence v
 and ignored local runtime/private results are retained.
 
 Automatic approval review rejected deletion of the verified ignored plan scratch directory as 'blocked by policy', without a more detailed reason. It was not retried and remains ignored. Committed source/evidence and the tracked tree are unaffected.
+
+## Publication follow-up - 30 October 2026
+
+Dmitry approved public repository creation, push and hosted CI. The repository now has
+public `origin` and default/local `main`; `codex/local-demo` is retained locally.
+Initial hosted run 40937981554 passed 54 focused tests and all 12 acceptance groups on
+c765658, with cleanup. The [publication report](publication-report-2026-10-30.md) gives
+exact provenance and preserves the earlier limits as historical decisions. The ignored
+scratch directory remains retained after the earlier policy rejection; no deletion retry.
