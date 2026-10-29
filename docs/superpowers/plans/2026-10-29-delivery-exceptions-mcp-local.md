@@ -10,7 +10,7 @@
 
 **Spec:** [Approved Project 18 design](../specs/2026-10-29-delivery-exceptions-mcp-design.md), approved by Dmitry on 29 October 2026. Read the design and `RULES.md` before execution.
 
-**Status:** Approved by Dmitry on 29 October 2026 for Native execution. Tasks 1-4 are complete; acceptance evidence is in progress in the separate local repository.
+**Status:** Approved by Dmitry on 29 October 2026 for Native execution. Local implementation and acceptance passed; final independent branch review is pending.
 
 ## Global Constraints
 
@@ -208,11 +208,11 @@ Each case includes ID, source/fixture/config identity, provenance and
 Missing prerequisites are never passing skips. `stop.ps1` stops only owned resources
 and preserves PostgreSQL evidence volumes.
 
-- [ ] **Step 1:** Write `AllTwelveCasesRequired`, `PartialRunKeepsFailureAndNotRun`, `CleanupDoesNotTouchUnownedProcessOrComposeProject`, `PublishedProjectionHasNoSecrets`, `ReportCannotClaimRemoteOrModelAcceptance`. Assert missing/duplicate case IDs and source/config mismatch fail; an injected mid-run failure still invokes cleanup; independent process/container fixtures survive.
-- [ ] **Step 2:** Run `dotnet test tests/DeliveryExceptions.Tests --filter Category=Report` to RED, implement strict aggregation and owned cleanup, then repeat to GREEN. Preserve failed attempts rather than rewriting their results.
-- [ ] **Step 3:** Implement all design A1-A12 against the real service, PostgreSQL and browser-issued tokens. A7 includes genuine expiry using a pre-registered short-lived test client (10 seconds plus two-second skew), genuine ID-token rejection and labelled crafted issuer/audience/signature negatives; production configuration never trusts fixture keys. A8 checks concurrent committed state, A9 reads the note then attempts forbidden writes, A10 inspects logs/audit, A11 restarts only the service, A12 tests actual target binding and PKCE/state failure. Private setup resets case fixtures, never a public reset tool.
-- [ ] **Step 4:** Run `pwsh -File scripts/check.ps1`, then `pwsh -File scripts/acceptance.ps1`. Require all A1-A12 and build/format/tests GREEN on the same source/fixture/config set. Verify sanitized artifacts and shutdown of owned application, containers, browser and callback listeners. Keep named evidence volumes. Record actual test counts.
-- [ ] **Step 5:** Write dated report with exact SHA/tree, fixture hash, runtime/SDK/provider/database/browser pins, experimental feature flag, actual statuses, redacted audit, process-stop proof and limits. Include Windows/WSL reproduction and native-Docker CI recipe. CI definition uses no cloud credentials; hosted CI remains unproven until separately published/executed.
+- [x] **Step 1:** Write `AllTwelveCasesRequired`, `PartialRunKeepsFailureAndNotRun`, `CleanupDoesNotTouchUnownedProcessOrComposeProject`, `PublishedProjectionHasNoSecrets`, `ReportCannotClaimRemoteOrModelAcceptance`. Assert missing/duplicate case IDs and source/config mismatch fail; an injected mid-run failure still invokes cleanup; independent process/container fixtures survive.
+- [x] **Step 2:** Run `dotnet test tests/DeliveryExceptions.Tests --filter Category=Report` to RED, implement strict aggregation and owned cleanup, then repeat to GREEN. Preserve failed attempts rather than rewriting their results.
+- [x] **Step 3:** Implement all design A1-A12 against the real service, PostgreSQL and browser-issued tokens. A7 includes genuine expiry using a pre-registered short-lived test client (10 seconds plus two-second skew), genuine ID-token rejection and labelled crafted issuer/audience/signature negatives; production configuration never trusts fixture keys. A8 checks concurrent committed state, A9 reads the note then attempts forbidden writes, A10 inspects logs/audit, A11 restarts only the service, A12 tests actual target binding and PKCE/state failure. Private setup resets case fixtures, never a public reset tool.
+- [x] **Step 4:** Run `pwsh -File scripts/check.ps1`, then `pwsh -File scripts/acceptance.ps1`. Require all A1-A12 and build/format/tests GREEN on the same source/fixture/config set. Verify sanitized artifacts and shutdown of owned application, containers, browser and callback listeners. Keep named evidence volumes. Record actual test counts.
+- [x] **Step 5:** Write dated report with exact SHA/tree, fixture hash, runtime/SDK/provider/database/browser pins, experimental feature flag, actual statuses, redacted audit, process-stop proof and limits. Include Windows/WSL reproduction and native-Docker CI recipe. CI definition uses no cloud credentials; hosted CI remains unproven until separately published/executed.
 - [ ] **Step 6:** Run one whole-branch review under the selected workflow, reproduce/fix material findings and repeat affected checks; rerun final acceptance when behavior/config changed. Update tracker/handover with actual outcomes and outward-action boundary. Commit reviewed source/report and verify personal identity before requesting public publication.
 
 ## Coverage and self-review
