@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authentication;
 
 const string issuer = "http://127.0.0.1:5182/realms/delivery-demo";
 const string resource = "http://127.0.0.1:5180/mcp";
+static bool IsMcpRequestPath(HttpContext context) => string.Equals(context.Request.Path.Value?.TrimEnd('/'), "/mcp", StringComparison.OrdinalIgnoreCase);
 var initialize = args.Contains("--initialize-demo", StringComparer.Ordinal);
 var builder = WebApplication.CreateBuilder(args.Where(argument => argument != "--initialize-demo").ToArray());
 builder.WebHost.ConfigureKestrel(server => server.Listen(IPAddress.Loopback, 5180));
@@ -75,7 +76,7 @@ if (initialize)
 }
 app.Use(async (context, next) =>
 {
-    if (context.Request.Path == "/mcp")
+    if (IsMcpRequestPath(context))
     {
         var correlation = Guid.NewGuid().ToString("N");
         context.Response.Headers["X-Correlation-Id"] = correlation;
@@ -104,7 +105,7 @@ app.Use(async (context, next) =>
 app.UseAuthentication();
 app.Use(async (context, next) =>
 {
-    if (context.Request.Path == "/mcp" && context.User.Identity?.IsAuthenticated == true)
+    if (IsMcpRequestPath(context) && context.User.Identity?.IsAuthenticated == true)
     {
         var actor = Actor.FromPrincipal(context.User);
         if (actor is null) { await context.ChallengeAsync(McpAuthenticationDefaults.AuthenticationScheme); return; }

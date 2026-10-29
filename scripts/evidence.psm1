@@ -1,4 +1,4 @@
-function New-AcceptanceReport($Identity, $Cases, $Cleanup, [int]$TestExitCode=0) {
+function New-AcceptanceReport($Identity, $Cases, $Cleanup, [int]$TestExitCode=0, [bool]$ResultValidationPassed=$true) {
   $keys=@('source','tree','fixture','config')
   $safeIdentity=[ordered]@{}
   foreach($key in $keys) {
@@ -17,7 +17,7 @@ function New-AcceptanceReport($Identity, $Cases, $Cleanup, [int]$TestExitCode=0)
     $safeCases+=@{id=$case.id;status=$case.status;identity=$safeIdentity;provenance=$case.provenance}
   }
   $passed=($Cleanup.passed -is [bool]) -and $Cleanup.passed
-  return [ordered]@{schemaVersion=1;measuredAt=[DateTimeOffset]::UtcNow.ToString('o');identity=$safeIdentity;cases=$safeCases;cleanup=@{passed=$passed};testExitCode=$TestExitCode;accepted=($TestExitCode -eq 0 -and $passed -and @($safeCases|Where-Object status -ne 'pass').Count -eq 0);environment='local-loopback';modelCalls=0;hostedCiProven=$false;remoteHttpsProven=$false}
+  return [ordered]@{schemaVersion=1;measuredAt=[DateTimeOffset]::UtcNow.ToString('o');identity=$safeIdentity;cases=$safeCases;cleanup=@{passed=$passed};testExitCode=$TestExitCode;resultValidationPassed=$ResultValidationPassed;accepted=($ResultValidationPassed -and $TestExitCode -eq 0 -and $passed -and @($safeCases|Where-Object status -ne 'pass').Count -eq 0);environment='local-loopback';modelCalls=0;hostedCiProven=$false;remoteHttpsProven=$false}
 }
 function Invoke-EvidenceRun($Body, $Cleanup) { try { & $Body } finally { & $Cleanup } }
 Export-ModuleMember -Function New-AcceptanceReport,Invoke-EvidenceRun
@@ -34,16 +34,23 @@ function Get-EvidenceIdentity {
 }
 function Read-AcceptanceCases($Path,$Identity) {
   $cases=@(1..12|ForEach-Object { @{id="A$_";status='not_run';identity=$Identity;provenance=$(if($_ -eq 7){'live-local-and-labelled-fixtures'}else{'live-local'})} })
-  if(!(Test-Path -LiteralPath $Path)){return $cases}
+  if(!(Test-Path -LiteralPath $Path)){return @{cases=$cases;valid=$false}}
   [xml]$trx=Get-Content -LiteralPath $Path -Raw
-  $seen=@{}
+  $seen=@{}; $valid=$true
   foreach($result in $trx.TestRun.Results.UnitTestResult){
-    if($result.testName -notmatch '\.A(\d{2})_'){throw 'Unexpected acceptance test result'}
+    if($result.testName -notmatch '\.A(\d{2})_'){$valid=$false;continue}
     $number=[int]$Matches[1]
-    if($number -lt 1 -or $number -gt 12 -or $seen.ContainsKey($number)){throw 'Duplicate/unrecognized acceptance result'}
+    if($number -lt 1 -or $number -gt 12){$valid=$false;continue}
+    $status=switch($result.outcome){'Passed'{'pass'} 'NotExecuted'{'not_run'} default{'fail'}}
+    if($seen.ContainsKey($number)){
+      $valid=$false
+      # A duplicate cannot erase an already observed failure or a new failure.
+      if($status -eq 'fail'){$cases[$number-1].status='fail'}
+      continue
+    }
     $seen[$number]=$true
-    $cases[$number-1].status=switch($result.outcome){'Passed'{'pass'} 'NotExecuted'{'not_run'} default{'fail'}}
+    $cases[$number-1].status=$status
   }
-  return $cases
+  return @{cases=$cases;valid=$valid}
 }
 Export-ModuleMember -Function Get-EvidenceIdentity,Read-AcceptanceCases

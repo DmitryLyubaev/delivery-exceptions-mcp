@@ -27,10 +27,10 @@ try {
       } catch {$script:cleanup=@{passed=$false}}
     }
   } finally {
-    $cases=Read-AcceptanceCases (Join-Path $run 'missing.trx') $identity
-    try {$cases=Read-AcceptanceCases (Join-Path $run 'acceptance.trx') $identity} catch {$script:testExit=1}
+    $cases=(Read-AcceptanceCases (Join-Path $run 'missing.trx') $identity).cases; $resultValidationPassed=$false
+    try {$parsed=Read-AcceptanceCases (Join-Path $run 'acceptance.trx') $identity; $cases=$parsed.cases; $resultValidationPassed=$parsed.valid; if(!$parsed.valid){$script:testExit=1}} catch {$script:testExit=1}
     try {$after=Get-EvidenceIdentity; foreach($key in $identity.Keys){if($after[$key] -cne $identity[$key]){$script:testExit=1}}} catch {$script:testExit=1}
-    $report=New-AcceptanceReport $identity $cases $script:cleanup $script:testExit
+    $report=New-AcceptanceReport $identity $cases $script:cleanup $script:testExit $resultValidationPassed
     $report|ConvertTo-Json -Depth 12|Set-Content (Join-Path $run 'acceptance.json')
     $script:cleanup|ConvertTo-Json -Depth 5|Set-Content (Join-Path $run 'cleanup.json')
     @('Local deterministic MCP acceptance. Zero model calls. No remote HTTPS or hosted CI claim.',"source=$($identity.source)","tree=$($identity.tree)","fixture=$($identity.fixture)","config=$($identity.config)") + @($cases|ForEach-Object {"$($_.id) $($_.status) $($_.provenance)"})|Set-Content (Join-Path $run 'transcript.txt')

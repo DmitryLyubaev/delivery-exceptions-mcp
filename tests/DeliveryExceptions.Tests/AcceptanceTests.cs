@@ -104,6 +104,7 @@ public sealed class AcceptanceTests(DemoStack stack, ITestOutputHelper output)
         await Assert.ThrowsAnyAsync<Exception>(() => new OAuthLogin((uri, ct) => browser.OpenAsync(ChangeQuery(uri, "scope", "openid"), ct), noScopeHttp).ConnectAsync(new("http://127.0.0.1:5180/mcp"), false, deadline.Token));
         Assert.NotNull(noScopeProbe.AccessToken);
         Assert.Equal(HttpStatusCode.Forbidden, await PostAsync(noScopeProbe.AccessToken));
+        await AuthBoundaryTests.AssertRouteAliasesAsync(stack, freshProbe.AccessToken!, noScopeProbe.AccessToken!);
         Assert.Equal(beforeA, await SnapshotAsync(A)); Assert.Equal(beforeB, await SnapshotAsync(B));
     }
     private static Uri ChangeQuery(Uri uri, string key, string value) => new UriBuilder(uri) { Query = QueryString.Create(QueryHelpers.ParseQuery(uri.Query).Select(p => new KeyValuePair<string, string?>(p.Key, p.Key == key ? value : p.Value.ToString()))).Value }.Uri;

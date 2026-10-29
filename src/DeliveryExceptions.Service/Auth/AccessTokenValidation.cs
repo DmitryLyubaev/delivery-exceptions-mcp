@@ -9,6 +9,7 @@ public static class AccessTokenValidation
         ValidateIssuer = true,
         ValidIssuer = "http://127.0.0.1:5182/realms/delivery-demo",
         ValidateAudience = true,
+        IgnoreTrailingSlashWhenValidatingAudience = false,
         ValidAudience = "http://127.0.0.1:5180/mcp",
         ValidateLifetime = true,
         RequireExpirationTime = true,

@@ -23,10 +23,12 @@ public static class SignedTokenFixtures
         handler.ValidateToken(positive, parameters, out _);
         var issuer = Create("http://wrong-issuer.invalid", parameters.ValidAudience!, DateTime.UtcNow.AddMinutes(1));
         var audience = Create(parameters.ValidIssuer!, "http://wrong-audience.invalid", DateTime.UtcNow.AddMinutes(1));
+        var slashAudience = Create(parameters.ValidIssuer!, parameters.ValidAudience! + "/", DateTime.UtcNow.AddMinutes(1));
         var expired = Create(parameters.ValidIssuer!, parameters.ValidAudience!, DateTime.UtcNow.AddSeconds(-10));
         Assert.Throws<SecurityTokenInvalidIssuerException>(() => handler.ValidateToken(issuer, parameters, out _));
         Assert.Throws<SecurityTokenInvalidAudienceException>(() => handler.ValidateToken(audience, parameters, out _));
         Assert.Throws<SecurityTokenExpiredException>(() => handler.ValidateToken(expired, parameters, out _));
-        return [issuer, audience, expired, positive];
+        Assert.Throws<SecurityTokenInvalidAudienceException>(() => handler.ValidateToken(slashAudience, parameters, out _));
+        return [issuer, audience, expired, positive, slashAudience];
     }
 }
