@@ -22,7 +22,7 @@ Wait until Keycloak's discovery endpoint is ready:
 Then run:
 
 ```powershell
-& ./.local/dotnet/dotnet.exe test tests/DeliveryExceptions.Tests --no-restore --disable-build-servers -m:1 --filter Category=Compatibility
+& ./.local/dotnet/dotnet.exe test tests/DeliveryExceptions.Tests --configuration Release --no-restore --disable-build-servers -m:1 --filter Category=Compatibility
 pwsh -File scripts/stop.ps1
 ```
 
@@ -71,3 +71,50 @@ tests in 40 seconds. Token lifetime, issuer/audience checks and PKCE remain unch
 
 Only the compatibility gate is accepted at this point. Tenant reads/writes, durable
 audit, full token-negative acceptance, restart evidence and the final report remain.
+
+## Standalone CLI demonstration
+
+The following is the actual command-line client, with browser-based user sign-in.
+Initialize local data privately, then start the service in a separate terminal:
+
+```powershell
+pwsh -File scripts/service.ps1 -Initialize
+pwsh -File scripts/service.ps1
+```
+
+In another terminal:
+
+```powershell
+& ./.local/dotnet/dotnet.exe src/DeliveryExceptions.Client/bin/Release/net10.0/DeliveryExceptions.Client.dll list
+& ./.local/dotnet/dotnet.exe src/DeliveryExceptions.Client/bin/Release/net10.0/DeliveryExceptions.Client.dll get --id a0000000-0000-0000-0000-000000000001
+& ./.local/dotnet/dotnet.exe src/DeliveryExceptions.Client/bin/Release/net10.0/DeliveryExceptions.Client.dll review --id a0000000-0000-0000-0000-000000000001 --expected-version 1
+```
+
+Use only the generated synthetic users in `.local/credentials.json` at the local
+Keycloak page. Do not save their passwords in the browser. To change users, sign out
+of this local realm or use a separate browser profile; actual token identity decides
+the tenant and permissions. Nothing signs into a cloud or employer account.
+
+The review command is an explicit decision with the version read beforehand. A review
+succeeds once; subsequent or stale attempts conflict. Initialization is idempotent and
+does not undo reviews. The acceptance harness privately resets independent test cases.
+Stop the foreground service with Ctrl+C before stopping dependencies.
+
+On 29 October, the real Release CLI and normal Chrome UI completed a read and review
+(exit 0/0), retained reviewed version 2 after an actual service restart (exit 0), and
+refused the stale version-1 review (exit 1). The success and conflict audit records were
+read back from PostgreSQL. Malformed CLI usage returned exit 2 without sign-in.
+The manual source was a recorded working-tree digest based on `ce4b332`; it is not
+represented as a clean exact-commit measurement. Private transcripts and a token-free
+callback screenshot are retained under `.local/`.
+
+During Task 4 self-review, the original unknown-resource fixture was found to also
+change targets between authorization and exchange. The test now sends the same
+unregistered URI in both requests and independently verifies `invalid_target` and
+zero successful token responses. The separate changed-resource case remains.
+
+The Audit/Client tests also prove durable denial/conflict events, no unverified identity
+in invalid-token audit, read/write refusal when audit storage is unavailable, actual
+HTTP 200 tool errors versus HTTP 401 transport errors, and callback-listener cleanup.
+Timeout cleanup is exercised using a 300ms injected timeout; the normal callback
+default remains 120 seconds. No claim of an observed two-minute wait follows.

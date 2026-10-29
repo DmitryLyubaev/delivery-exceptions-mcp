@@ -9,10 +9,13 @@ using System.Net;
 
 namespace DeliveryExceptions.Client;
 
-public sealed class OAuthLogin(Func<Uri, CancellationToken, Task>? openBrowser = null, HttpClient? http = null)
+public sealed class OAuthLogin(Func<Uri, CancellationToken, Task>? openBrowser = null, HttpClient? http = null, TimeSpan? callbackTimeout = null)
 {
+    public TimeSpan CallbackTimeout { get; } = callbackTimeout ?? TimeSpan.FromSeconds(120);
     public async Task<McpClient> ConnectAsync(Uri resource, bool requestReview, CancellationToken ct)
     {
+        if (CallbackTimeout <= TimeSpan.Zero || CallbackTimeout > TimeSpan.FromSeconds(120))
+            throw new ArgumentOutOfRangeException(nameof(callbackTimeout));
         if (resource.AbsoluteUri != "http://127.0.0.1:5180/mcp")
             throw new ArgumentException("Only the configured local MCP resource is supported", nameof(resource));
         var options = new HttpClientTransportOptions
@@ -38,7 +41,7 @@ public sealed class OAuthLogin(Func<Uri, CancellationToken, Task>? openBrowser =
     private async Task<AuthorizationResult?> ReceiveAsync(AuthorizationCallbackContext context, CancellationToken ct)
     {
         using var timeout = CancellationTokenSource.CreateLinkedTokenSource(ct);
-        timeout.CancelAfter(TimeSpan.FromSeconds(120));
+        timeout.CancelAfter(CallbackTimeout);
         var completion = new TaskCompletionSource<AuthorizationResult?>(TaskCreationOptions.RunContinuationsAsynchronously);
         var builder = WebApplication.CreateBuilder();
         builder.Logging.ClearProviders();

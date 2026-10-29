@@ -87,7 +87,7 @@ public sealed class OAuthCompatibilityTests(Support.DemoStack stack, Xunit.Abstr
     {
         using var deadline = new CancellationTokenSource(TimeSpan.FromSeconds(180));
         var browser = new Support.BrowserLogin();
-        using var probe = new Support.OAuthProbe();
+        using var probe = new Support.OAuthProbe("unknown-resource");
         using var http = new HttpClient(probe);
         var attempted = false;
         var login = new OAuthLogin(async (uri, ct) =>
@@ -102,6 +102,7 @@ public sealed class OAuthCompatibilityTests(Support.DemoStack stack, Xunit.Abstr
         output.WriteLine(System.Text.Json.JsonSerializer.Serialize(probe.SafeResponses));
         Assert.Equal(0, probe.SuccessfulTokens);
         Assert.Equal("invalid_target", probe.LastOAuthError);
+        Assert.Equal(["http://127.0.0.1:5180/unknown"], probe.SentResources);
         Assert.IsNotAssignableFrom<OperationCanceledException>(error);
     }
 

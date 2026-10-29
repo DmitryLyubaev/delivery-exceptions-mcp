@@ -10,7 +10,7 @@
 
 **Spec:** [Approved Project 18 design](../specs/2026-10-29-delivery-exceptions-mcp-design.md), approved by Dmitry on 29 October 2026. Read the design and `RULES.md` before execution.
 
-**Status:** Approved by Dmitry on 29 October 2026 for Native execution. Task 1 is in progress in the separate local repository.
+**Status:** Approved by Dmitry on 29 October 2026 for Native execution. Tasks 1-4 are complete; acceptance evidence is in progress in the separate local repository.
 
 ## Global Constraints
 
@@ -187,11 +187,11 @@ permission action, 2 means invalid usage/login cancellation/operational failure.
 `TransportAudit.RecordAsync(AuditEvent entry, CancellationToken ct) -> Task` persists
 HTTP denial events without trusting unverified JWT identity.
 
-- [ ] **Step 1:** Write `AuthenticationDenialHasNoTrustedSubject`, `DenialSurvivesDomainRollback`, `AuditUnavailablePreventsReadAndWriteSuccess`, `TransportAndToolFailuresRemainDistinct`, `CliShowsCorrelationWithoutToken`, `CancelledLoginClosesListener`, `CallbackTimeoutClosesListener`, `LogOutputContainsNoTokenCodeOrPassword`, `CarrierNoteIsNeverAuthority`. Inspect persisted fields and captured stdout/stderr using JWT/secret/control-character markers.
-- [ ] **Step 2:** Run `dotnet test tests/DeliveryExceptions.Tests --filter 'Category=Audit|Category=Client'`; inspect RED behavior.
-- [ ] **Step 3:** Implement allowed-read/denied-tool audits separately from rolled-back domain transactions. Audit must succeed before returning read data. Authentication events have no unverified subject; validated callers can carry trusted identity. Audit outage yields sanitized unavailable behavior and prevents business success, without claiming a database audit of that outage. Never store notes, request bodies or headers.
-- [ ] **Step 4:** Implement CLI commands, explicit review/version arguments, memory-only tokens, no automatic scope escalation and a 120-second callback timeout/cancellation. Print structured outcome and correlation ID. Add the manual three-user browser recipe and deliberate forbidden tool calls after reading the malicious note. No LLM is evaluated.
-- [ ] **Step 5:** Repeat Audit/Client/Tools to GREEN, exercise actual interactive browser login plus one read/review, retain a sanitized transcript, then commit as `feat: add audited MCP client demonstration`.
+- [x] **Step 1:** Write `AuthenticationDenialHasNoTrustedSubject`, `DenialSurvivesDomainRollback`, `AuditUnavailablePreventsReadAndWriteSuccess`, `TransportAndToolFailuresRemainDistinct`, `CliShowsCorrelationWithoutToken`, `CancelledLoginClosesListener`, `CallbackTimeoutClosesListener`, `LogOutputContainsNoTokenCodeOrPassword`, `CarrierNoteIsNeverAuthority`. Inspect persisted fields and captured stdout/stderr using JWT/secret/control-character markers.
+- [x] **Step 2:** Run `dotnet test tests/DeliveryExceptions.Tests --filter 'Category=Audit|Category=Client'`; inspect RED behavior.
+- [x] **Step 3:** Implement allowed-read/denied-tool audits separately from rolled-back domain transactions. Audit must succeed before returning read data. Authentication events have no unverified subject; validated callers can carry trusted identity. Audit outage yields sanitized unavailable behavior and prevents business success, without claiming a database audit of that outage. Never store notes, request bodies or headers.
+- [x] **Step 4:** Implement CLI commands, explicit review/version arguments, memory-only tokens, no automatic scope escalation and a 120-second callback timeout/cancellation. Print structured outcome and correlation ID. Add the manual three-user browser recipe and deliberate forbidden tool calls after reading the malicious note. No LLM is evaluated.
+- [x] **Step 5:** Repeat Audit/Client/Tools to GREEN, exercise actual interactive browser login plus one read/review, retain a sanitized transcript, then commit as `feat: add audited MCP client demonstration`.
 
 ## Task 5: Acceptance and evidence closeout
 

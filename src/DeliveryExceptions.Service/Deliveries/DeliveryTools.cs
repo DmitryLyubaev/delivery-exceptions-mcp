@@ -19,18 +19,20 @@ public sealed class DeliveryTools(DeliveryService service, IHttpContextAccessor 
     {
         var actor = http.HttpContext is { } context ? Actor.FromPrincipal(context.User) : null;
         if (actor is null) return Error("forbidden");
+        async Task<CallToolResult> InvalidAsync() => Result(await service.RejectAsync(actor,
+            Catalog.Any(tool => tool.Name == request.Name) ? request.Name : "unknown_tool", ct));
         var args = request.Arguments;
         if (request.Name == "list_delayed_deliveries")
-            return args is { Count: > 0 } ? Error("invalid_argument") : Result(await service.ListAsync(actor, ct));
-        if (request.Name is not ("get_delivery" or "mark_exception_reviewed")) return Error("invalid_argument");
+            return args is { Count: > 0 } ? await InvalidAsync() : Result(await service.ListAsync(actor, ct));
+        if (request.Name is not ("get_delivery" or "mark_exception_reviewed")) return await InvalidAsync();
         var review = request.Name == "mark_exception_reviewed";
         if (args is null || args.Count != (review ? 2 : 1) ||
             args.Keys.Any(key => key != "delivery_id" && (!review || key != "expected_version")) ||
             !args.TryGetValue("delivery_id", out var rawId) || rawId.ValueKind != JsonValueKind.String ||
-            rawId.GetString() is not { Length: 36 } idText || !Guid.TryParseExact(idText, "D", out var id)) return Error("invalid_argument");
+            rawId.GetString() is not { Length: 36 } idText || !Guid.TryParseExact(idText, "D", out var id)) return await InvalidAsync();
         if (!review) return Result(await service.GetAsync(actor, id, ct));
         if (!args.TryGetValue("expected_version", out var rawVersion) || rawVersion.ValueKind != JsonValueKind.Number ||
-            !rawVersion.TryGetInt64(out var version) || version <= 0) return Error("invalid_argument");
+            !rawVersion.TryGetInt64(out var version) || version <= 0) return await InvalidAsync();
         return Result(await service.ReviewAsync(actor, id, version, ct));
     }
 

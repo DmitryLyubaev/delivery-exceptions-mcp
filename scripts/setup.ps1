@@ -31,14 +31,14 @@ try {
   @("KEYCLOAK_IMAGE=$($versions.keycloak)","POSTGRES_IMAGE=$($versions.postgres)","KEYCLOAK_ADMIN_PASSWORD=$($privateConfig.adminPassword)","POSTGRES_PASSWORD=$($privateConfig.postgresPassword)") | Set-Content '.local/docker.env'
   & $dotnetExe restore --locked-mode --disable-build-servers -m:1
   if ($LASTEXITCODE -ne 0) { throw 'Locked restore failed' }
-  & $dotnetExe build --no-restore --disable-build-servers -m:1
+  & $dotnetExe build --no-restore --disable-build-servers -m:1 --configuration Release
   if ($LASTEXITCODE -ne 0) { throw 'Build failed' }
   $previousNodeOptions = $env:NODE_OPTIONS
   $previousBrowserPath = $env:PLAYWRIGHT_BROWSERS_PATH
   try {
     $env:NODE_OPTIONS = "$previousNodeOptions --use-system-ca".Trim()
     $env:PLAYWRIGHT_BROWSERS_PATH = Join-Path $projectRoot '.local/browsers'
-    pwsh tests/DeliveryExceptions.Tests/bin/Debug/net10.0/playwright.ps1 install chromium
+    pwsh tests/DeliveryExceptions.Tests/bin/Release/net10.0/playwright.ps1 install chromium
     if ($LASTEXITCODE -ne 0) { throw 'Matching Chromium installation failed' }
   } finally { $env:NODE_OPTIONS = $previousNodeOptions; $env:PLAYWRIGHT_BROWSERS_PATH = $previousBrowserPath }
   Write-Output 'Local setup ready. Start the two dependencies with scripts/dependencies.ps1 up.'

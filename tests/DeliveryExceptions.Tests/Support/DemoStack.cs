@@ -9,6 +9,8 @@ public sealed class DemoStack : IAsyncLifetime
 {
     public HttpClient Http { get; } = new() { Timeout = TimeSpan.FromSeconds(5) };
     private Process? service;
+    private readonly System.Text.StringBuilder serviceOutput = new();
+    public string ServiceOutput { get { lock (serviceOutput) return serviceOutput.ToString(); } }
     private readonly Dictionary<string, (McpClient Client, DateTimeOffset Created)> clients = [];
 
     public async Task<McpClient> GetClientAsync(string user = "a-operator", bool review = true)
@@ -44,15 +46,24 @@ public sealed class DemoStack : IAsyncLifetime
 
     public async Task InitializeAsync()
     {
+        await using (var source = DemoDatabase.Source())
+        {
+            var database = new DeliveryExceptions.Service.Storage.Database(source);
+            await database.MigrateAsync(CancellationToken.None);
+            await database.SeedAsync(Path.Combine(Root, "fixtures"), CancellationToken.None);
+        }
         var start = new ProcessStartInfo(Path.Combine(Root, ".local", "dotnet", "dotnet.exe"))
         {
             WorkingDirectory = Root, UseShellExecute = false, CreateNoWindow = true,
             RedirectStandardOutput = true, RedirectStandardError = true
         };
-        start.ArgumentList.Add(Path.Combine(Root, "src", "DeliveryExceptions.Service", "bin", "Debug", "net10.0", "DeliveryExceptions.Service.dll"));
+        var configuration = new DirectoryInfo(AppContext.BaseDirectory).Parent!.Name;
+        start.ArgumentList.Add(Path.Combine(Root, "src", "DeliveryExceptions.Service", "bin", configuration, "net10.0", "DeliveryExceptions.Service.dll"));
         start.Environment["ASPNETCORE_URLS"] = "http://127.0.0.1:5180";
         start.Environment["DELIVERY_DB_CONNECTION"] = DemoDatabase.ConnectionString;
         service = Process.Start(start) ?? throw new InvalidOperationException("Service did not start");
+        service.OutputDataReceived += (_, line) => { if (line.Data is not null) lock (serviceOutput) serviceOutput.AppendLine(line.Data); };
+        service.ErrorDataReceived += (_, line) => { if (line.Data is not null) lock (serviceOutput) serviceOutput.AppendLine(line.Data); };
         service.BeginOutputReadLine();
         service.BeginErrorReadLine();
         for (var attempt = 0; attempt < 100; attempt++)
