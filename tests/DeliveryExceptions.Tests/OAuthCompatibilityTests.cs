@@ -28,7 +28,7 @@ public sealed class OAuthCompatibilityTests(Support.DemoStack stack, Xunit.Abstr
     }
 
     [Fact]
-    public async Task BrowserPkceLoginDiscoversEmptyToolList()
+    public async Task BrowserPkceLoginDiscoversExpectedTools()
     {
         var browser = new Support.BrowserLogin();
         using var probe = new Support.OAuthProbe();
@@ -49,7 +49,7 @@ public sealed class OAuthCompatibilityTests(Support.DemoStack stack, Xunit.Abstr
         catch { output.WriteLine(System.Text.Json.JsonSerializer.Serialize(probe.SafeResponses)); throw; }
         await using var ownedClient = client;
         Assert.Equal("2026-07-28", client.NegotiatedProtocolVersion);
-        Assert.Empty(await client.ListToolsAsync(cancellationToken: deadline.Token));
+        Assert.Equal(3, (await client.ListToolsAsync(cancellationToken: deadline.Token)).Count);
         Assert.True(sawAuthorization);
         Assert.Equal(["http://127.0.0.1:5180/mcp"], probe.Resources);
     }

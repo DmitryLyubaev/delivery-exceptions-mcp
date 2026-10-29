@@ -8,7 +8,10 @@ invented delivery records. It is not a production shipping or identity platform.
 29 October 2026: the local OAuth compatibility gate passes 10 tests without skips.
 A real Keycloak browser sign-in issues a resource-targeted token; the official C# SDK
 connects over Streamable HTTP using MCP `2026-07-28` and discovers an empty tool list.
-Business tools and the complete twelve-case acceptance milestone are not yet delivered.
+The three business tools, tenant permissions, optimistic concurrency and atomic
+success audit are implemented. The current full suite passes 34 tests with no skips.
+Durable read/denial audit, the usable CLI and the complete twelve-case acceptance
+milestone remain in progress.
 
 Keycloak's `resource-indicators` feature is experimental. Local HTTP/development-mode
 identity proves local behavior only. Remote HTTPS hosting, paid-model behavior and

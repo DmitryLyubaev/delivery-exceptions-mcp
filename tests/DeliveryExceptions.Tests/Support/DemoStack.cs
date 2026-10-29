@@ -1,5 +1,7 @@
 using System.Diagnostics;
 using Xunit;
+using ModelContextProtocol.Client;
+using DeliveryExceptions.Client;
 
 namespace DeliveryExceptions.Tests.Support;
 
@@ -7,6 +9,23 @@ public sealed class DemoStack : IAsyncLifetime
 {
     public HttpClient Http { get; } = new() { Timeout = TimeSpan.FromSeconds(5) };
     private Process? service;
+    private readonly Dictionary<string, (McpClient Client, DateTimeOffset Created)> clients = [];
+
+    public async Task<McpClient> GetClientAsync(string user = "a-operator", bool review = true)
+    {
+        var key = $"{user}:{review}";
+        if (clients.TryGetValue(key, out var existing))
+        {
+            if (DateTimeOffset.UtcNow - existing.Created < TimeSpan.FromSeconds(80)) return existing.Client;
+            await existing.Client.DisposeAsync();
+            clients.Remove(key);
+        }
+        using var deadline = new CancellationTokenSource(TimeSpan.FromSeconds(180));
+        var browser = new BrowserLogin(user);
+        var client = await new OAuthLogin(browser.OpenAsync).ConnectAsync(new("http://127.0.0.1:5180/mcp"), review, deadline.Token);
+        clients.Add(key, (client, DateTimeOffset.UtcNow));
+        return client;
+    }
     public int ServiceProcessId => service?.Id ?? throw new InvalidOperationException("No owned service");
     public async Task RestartAsync()
     {
@@ -32,6 +51,7 @@ public sealed class DemoStack : IAsyncLifetime
         };
         start.ArgumentList.Add(Path.Combine(Root, "src", "DeliveryExceptions.Service", "bin", "Debug", "net10.0", "DeliveryExceptions.Service.dll"));
         start.Environment["ASPNETCORE_URLS"] = "http://127.0.0.1:5180";
+        start.Environment["DELIVERY_DB_CONNECTION"] = DemoDatabase.ConnectionString;
         service = Process.Start(start) ?? throw new InvalidOperationException("Service did not start");
         service.BeginOutputReadLine();
         service.BeginErrorReadLine();
@@ -46,6 +66,8 @@ public sealed class DemoStack : IAsyncLifetime
 
     private async Task StopServiceAsync()
     {
+        foreach (var entry in clients.Values) await entry.Client.DisposeAsync();
+        clients.Clear();
         if (service is { HasExited: false }) { service.Kill(entireProcessTree: true); await service.WaitForExitAsync(); }
         service?.Dispose();
         service = null;

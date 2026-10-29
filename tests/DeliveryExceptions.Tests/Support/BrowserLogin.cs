@@ -12,7 +12,7 @@ public sealed class BrowserLogin(string username = "a-operator")
         using var playwright = await Playwright.CreateAsync();
         await using var browser = await playwright.Chromium.LaunchAsync(new() { Headless = true });
         var page = await browser.NewPageAsync();
-        await page.GotoAsync(uri.AbsoluteUri);
+        await page.GotoAsync(uri.AbsoluteUri, new() { WaitUntil = WaitUntilState.DOMContentLoaded });
         if (ct.IsCancellationRequested)
             throw new TimeoutException($"Browser startup/navigation exceeded test budget after {timing.Elapsed.TotalSeconds:F0}s");
         if (page.Url.StartsWith("http://127.0.0.1:5181/callback", StringComparison.Ordinal)) return;
@@ -20,6 +20,14 @@ public sealed class BrowserLogin(string username = "a-operator")
         await page.Locator("#username").FillAsync(username);
         await page.Locator("#password").FillAsync(privateConfig.RootElement.GetProperty("users").GetProperty(username).GetString()!);
         await page.Locator("#kc-login").ClickAsync();
-        await page.WaitForURLAsync("http://127.0.0.1:5181/callback**");
+        // The callback request, not completion of page-resource loading, is the
+        // OAuth boundary. The SDK independently checks its code, state and issuer.
+        try { await page.WaitForFunctionAsync("() => location.origin === 'http://127.0.0.1:5181' && location.pathname === '/callback'"); }
+        catch (TimeoutException)
+        {
+            var currentPath = new Uri(page.Url).AbsolutePath;
+            var problem = await page.Locator("#input-error").CountAsync() > 0 ? await page.Locator("#input-error").InnerTextAsync() : "no-login-error";
+            throw new InvalidOperationException($"Synthetic login callback wait failed for {username}; path={currentPath}; login-error={problem.Trim()}");
+        }
     }
 }
