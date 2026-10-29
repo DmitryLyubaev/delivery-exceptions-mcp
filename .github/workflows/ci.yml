@@ -20,6 +20,7 @@ jobs:
           $realm=Get-Content infra/keycloak/realm-template.json -Raw|ConvertFrom-Json
           $private=@{users=@{};adminPassword=[Convert]::ToHexString([Security.Cryptography.RandomNumberGenerator]::GetBytes(24));postgresPassword=[Convert]::ToHexString([Security.Cryptography.RandomNumberGenerator]::GetBytes(24))}
           foreach($user in $realm.users){$value=[Convert]::ToHexString([Security.Cryptography.RandomNumberGenerator]::GetBytes(20));$private.users[$user.username]=$value;$user|Add-Member -NotePropertyName credentials -NotePropertyValue @(@{type='password';value=$value;temporary=$false})}
+          foreach($value in @($private.adminPassword,$private.postgresPassword)+@($private.users.Values)){Write-Output "::add-mask::$value"}
           $realm|ConvertTo-Json -Depth 30|Set-Content .local/realm.json
           $private|ConvertTo-Json -Depth 10|Set-Content .local/credentials.json
           $versions=Get-Content infra/versions.json -Raw|ConvertFrom-Json
@@ -44,5 +45,21 @@ jobs:
         if: always()
         shell: pwsh
         run: ./scripts/stop.ps1
-# This definition is unpublished and has not been executed on hosted CI.
+      - name: Collect only allowlisted evidence
+        if: always()
+        shell: pwsh
+        run: |
+          $destination=Join-Path $env:RUNNER_TEMP 'p18-public-evidence'
+          New-Item -ItemType Directory $destination -Force|Out-Null
+          foreach($name in @('check.json','acceptance.json','cleanup.json','transcript.txt')){
+            $source=Join-Path '.local/results' $name
+            if(Test-Path -LiteralPath $source){Copy-Item -LiteralPath $source -Destination (Join-Path $destination $name)}
+          }
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: public-acceptance-evidence
+          path: ${{ runner.temp }}/p18-public-evidence/
+          if-no-files-found: warn
+          retention-days: 7
 # Private credentials, TRX, raw browser/provider logs and tokens are never uploaded.
